@@ -36,12 +36,6 @@ class LiveModel:
 
 
 
-    """
-        def get_word(self):
-		#Retourne les données sous forme de liste
-		
-        return self.__word
-    """
 
     # Getter height
     def get_height(self):
@@ -73,12 +67,15 @@ class LiveModel:
     def set_vitesse(self, vitesse):
         self.__vitesse = vitesse
 
-    """
-        def modify_word(self, index):
-        code = ord(self.__word[index])
-        new_letter = chr(code + 1)
-        self.__word[index] = new_letter
-
-    def reset_word(self):
-        self.__word = copy.copy(self.__word_original)
-    """
+    def initialisation_cellules(self):
+        # assigne une valeur 0(morte) a chaque coordonnées(cellules)
+        # (valeur par défault en quelque sorte ^^)
+        i = 0
+        while i != self.get_width() / self.get_c():
+            j = 0
+            while j != self.get_height() / self.get_c():
+                x = i * self.get_c()
+                y = j * self.get_c()
+                self.get_dico_case[x, y] = 0
+                j += 1
+            i += 1

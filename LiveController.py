@@ -1,121 +1,204 @@
-#import random
-from LiveModel import LiveModel
-from LiveView import LiveView
+from tkinter import *
 
 
 class LiveController:
 
-    def __init__(self):
-        self.model = LiveModel()
-        self.view = LiveView(self)
+    def __init__(self, liveModel, liveView):
+        self.model = liveModel
+        self.view = liveView
         self.get_canvas = self.view.get_canvas()
 
+        #
+        self.model.initialisation_cellules()
 
-        # Getter __dico_case
-        self.get_dico_case = self.model.get_dico_case()
-        i = 0
-
-        # assigne une valeur 0(morte) a chaque coordonnées(cellules)
-        # (valeur par défault en quelque sorte ^^)
-        while i != self.model.get_width() / self.model.get_c():
-            j = 0
-            while j != self.model.get_height() / self.model.get_c():
-                x = i * self.model.get_c()
-                y = j * self.model.get_c()
-                self.get_dico_case[x, y] = 0
-                j += 1
-            i += 1
-
+        self.play()
         #
         self.view.mainloop()
 
 
-    """
-        def gui_change_vit(self, new_speed):
-        #fonction pour changer la vitesse(l'attente entre chaque étape)
-        # global vitesse
-        # vitesse = int(eval(entree.get()))
-        print(new_speed)
-    
-        def gui_go(self):
-        print("button go pressed")
-     def gui_display(self):
-		#1) Récupère le contenu de Model
-		#2) L'envoie à  View pour affichage
-	
-        word_l = self.model.get_word()
-        # print(word_l)
-        self.view.display_word(word_l)
 
-    def gui_modify(self):
-        word_l = self.model.get_word()
-        i_alea = random.randrange(len(word_l))
-        self.model.modify_word(i_alea)
-        print("mot modifié")
+    def play(self):
+        v = 0
+        while v != self.model.get_width() / self.model.get_c():
+            w = 0
+            while w != self.model.get_height() / self.model.get_c():
+                x = v * self.model.get_c()
+                y = w * self.model.get_c()
 
-    def gui_reset(self):
-        self.model.reset_word()
-        print("mot resetté")
-    """
+                # cas spéciaux:
+                # les coins
+                # coin en haut à gauche
+                if x == 0 and y == 0:
+                    compt_viv = 0
+                    if self.model.get_dico_case[x, y + self.model.get_c()] == 1:
+                        compt_viv += 1
+                    if self.model.get_dico_case[x + self.model.get_c(), y] == 1:
+                        compt_viv += 1
+                    if self.model.get_dico_case[
+                        x + self.model.get_c(), y + self.model.get_c()] == 1:
+                        compt_viv += 1
+                    self.model.get_dico_etat[x, y] = compt_viv
+                # coin en bas à gauche
+                elif x == 0 and y == int(self.model.get_height() - self.model.get_c()):
+                    compt_viv = 0
+                    if self.model.get_dico_case[x, y - self.model.get_c()] == 1:
+                        compt_viv += 1
+                    if self.model.get_dico_case[
+                        x + self.model.get_c(), y - self.model.get_c()] == 1:
+                        compt_viv += 1
+                    if self.model.get_dico_case[x + self.model.get_c(), y] == 1:
+                        compt_viv += 1
+                    self.model.get_dico_etat[x, y] = compt_viv
+                # coin en haut à droite
+                elif x == int(self.model.get_width() - self.model.get_c()) and y == 0:
+                    compt_viv = 0
+                    if self.model.get_dico_case[x - self.model.get_c(), y] == 1:
+                        compt_viv += 1
+                    if self.model.get_dico_case[
+                        x - self.model.get_c(), y + self.model.get_c()] == 1:
+                        compt_viv += 1
+                    if self.model.get_dico_case[x, y + self.model.get_c()] == 1:
+                        compt_viv += 1
+                    self.model.get_dico_etat[x, y] = compt_viv
+                # coin en bas à droite
+                elif x == int(self.model.get_width() - self.model.get_c()) and y == int(
+                        self.model.get_height() - self.model.get_c()):
+                    compt_viv = 0
+                    if self.model.get_dico_case[
+                        x - self.model.get_c(), y - self.model.get_c()] == 1:
+                        compt_viv += 1
+                    if self.model.get_dico_case[x - self.model.get_c(), y] == 1:
+                        compt_viv += 1
+                    if self.model.get_dico_case[x, y - self.model.get_c()] == 1:
+                        compt_viv += 1
+                    self.model.get_dico_etat[x, y] = compt_viv
 
-    # fonction rendant vivante la cellule cliquée donc met la valeur 1 pour la cellule cliquée au __dico_case
-    def click_gauche(self, event):
-        x = event.x - (event.x % self.model.get_c())
-        y = event.y - (event.y % self.model.get_c())
-        self.get_canvas.create_rectangle(x, y, x + self.model.get_c(), y + self.model.get_c(), fill='black')
-        self.get_dico_case[x, y] = 1
+                # cas spéciaux:
+                # les bords du tableau (sans les coins)
+                # bord de gauche
+                elif x == 0 and 0 < y < int(self.model.get_height() - self.model.get_c()):
+                    compt_viv = 0
+                    if self.model.get_dico_case[x, y - self.model.get_c()] == 1:
+                        compt_viv += 1
+                    if self.model.get_dico_case[x, y + self.model.get_c()] == 1:
+                        compt_viv += 1
+                    if self.model.get_dico_case[
+                        x + self.model.get_c(), y - self.model.get_c()] == 1:
+                        compt_viv += 1
+                    if self.model.get_dico_case[x + self.model.get_c(), y] == 1:
+                        compt_viv += 1
+                    if self.model.get_dico_case[
+                        x + self.model.get_c(), y + self.model.get_c()] == 1:
+                        compt_viv += 1
+                    self.model.get_dico_etat[x, y] = compt_viv
+                # bord de droite
+                elif x == int(self.model.get_width() - self.model.get_c()) and 0 < y < int(
+                        self.model.get_height() - self.model.get_c()):
+                    compt_viv = 0
+                    if self.model.get_dico_case[
+                        x - self.model.get_c(), y - self.model.get_c()] == 1:
+                        compt_viv += 1
+                    if self.model.get_dico_case[x - self.model.get_c(), y] == 1:
+                        compt_viv += 1
+                    if self.model.get_dico_case[
+                        x - self.model.get_c(), y + self.model.get_c()] == 1:
+                        compt_viv += 1
+                    if self.model.get_dico_case[x, y - self.model.get_c()] == 1:
+                        compt_viv += 1
+                    if self.model.get_dico_case[x, y + self.model.get_c()] == 1:
+                        compt_viv += 1
+                    self.model.get_dico_etat[x, y] = compt_viv
+                # bord du haut
+                elif 0 < x < int(self.model.get_width() - self.model.get_c()) and y == 0:
+                    compt_viv = 0
+                    if self.model.get_dico_case[x - self.model.get_c(), y] == 1:
+                        compt_viv += 1
+                    if self.model.get_dico_case[
+                        x - self.model.get_c(), y + self.model.get_c()] == 1:
+                        compt_viv += 1
+                    if self.model.get_dico_case[x, y + self.model.get_c()] == 1:
+                        compt_viv += 1
+                    if self.model.get_dico_case[x + self.model.get_c(), y] == 1:
+                        compt_viv += 1
+                    if self.model.get_dico_case[
+                        x + self.model.get_c(), y + self.model.get_c()] == 1:
+                        compt_viv += 1
+                    self.model.get_dico_etat[x, y] = compt_viv
+                # bord du bas
+                elif 0 < x < int(self.model.get_width() - self.model.get_c()) and y == int(
+                        self.model.get_height() - self.model.get_c()):
+                    compt_viv = 0
+                    if self.model.get_dico_case[
+                        x - self.model.get_c(), y - self.model.get_c()] == 1:
+                        compt_viv += 1
+                    if self.model.get_dico_case[x - self.model.get_c(), y] == 1:
+                        compt_viv += 1
+                    if self.model.get_dico_case[x, y - self.model.get_c()] == 1:
+                        compt_viv += 1
+                    if self.model.get_dico_case[
+                        x + self.model.get_c(), y - self.model.get_c()] == 1:
+                        compt_viv += 1
+                    if self.model.get_dico_case[x + self.model.get_c(), y] == 1:
+                        compt_viv += 1
+                    self.model.get_dico_etat[x, y] = compt_viv
 
-    # fonction tuant la cellule cliquée donc met la valeur 0 pour la cellule cliquée au __dico_case
-    def click_droit(self, event):
-        x = event.x - (event.x % self.model.get_c())
-        y = event.y - (event.y % self.model.get_c())
-        self.get_canvas.create_rectangle(x, y, x + self.model.get_c(), y + self.model.get_c(), fill='white')
-        self.get_dico_case[x, y] = 0
+                # cas généraux
+                # les cellules qui ne sont pas dans les bords du tableau
+                else:
+                    compt_viv = 0
+                    if self.model.get_dico_case[
+                        x - self.model.get_c(), y - self.model.get_c()] == 1:
+                        compt_viv += 1
+                    if self.model.get_dico_case[x - self.model.get_c(), y] == 1:
+                        compt_viv += 1
+                    if self.model.get_dico_case[
+                        x - self.model.get_c(), y + self.model.get_c()] == 1:
+                        compt_viv += 1
+                    if self.model.get_dico_case[x, y - self.model.get_c()] == 1:
+                        compt_viv += 1
+                    if self.model.get_dico_case[x, y + self.model.get_c()] == 1:
+                        compt_viv += 1
+                    if self.model.get_dico_case[
+                        x + self.model.get_c(), y - self.model.get_c()] == 1:
+                        compt_viv += 1
+                    if self.model.get_dico_case[x + self.model.get_c(), y] == 1:
+                        compt_viv += 1
+                    if self.model.get_dico_case[
+                        x + self.model.get_c(), y + self.model.get_c()] == 1:
+                        compt_viv += 1
+                    self.model.get_dico_etat[x, y] = compt_viv
 
-    # "démarrage de l'animation"
-    def go(self):
-        #
-        if self.model.get_flag() == 0:
-            self.model.set_flag(1)
-            self.view.play()
+                w += 1
+            v += 1
+        self.redessiner()
+        if self.model.get_flag() > 0:
+            self.view.__fen1.after(self.model.get_vitesse(), self.play())
+        
 
-    # "arrêt de l'animation"
-    def stop(self):
-        self.model.set_flag(0)
-
-    # fonction pour changer la vitesse(l'attente entre chaque étape)
-    def change_vit(self):
-        self.model.set_vitesse(self.view.get_entree())
-        print(self.model.get_vitesse())
-
-
-    # Getter height
-    def get_height(self):
-        return self.model.get_height()
-
-    # Getter width
-    def get_width(self):
-        return self.model.get_width()
-
-    # Getter cellules
-    def get_c(self):
-        return self.model.get_c()
-
-    def get_dico_case(self):
-        return self.model.get_dico_case()
-
-    def get_dico_etat(self):
-        return self.model.get_dico_etat()
-
-    def get_flag(self):
-        return self.model.get_flag()
-
-    def get_vitesse(self):
-        return self.model.get_vitesse()
-
-    def set_flag(self, flag):
-        self.model.set_flag(flag)
-
-    def set_vitesse(self, vitesse):
-        self.model.set_vitesse(vitesse)
-
+    # fonction redessinant le tableau à partir de dico_etat
+    def redessiner(self):
+        self.view.get_canvas.delete(ALL)
+        self.view.damier()
+        t = 0
+        while t != self.model.get_width() / self.model.get_c():
+            u = 0
+            while u != self.model.get_height() / self.model.get_c():
+                x = t * self.model.get_c()
+                y = u * self.model.get_c()
+                if self.model.get_dico_etat[x, y] == 3:
+                    self.model.get_dico_etat[x, y] = 1
+                    self.view.__can1.create_rectangle(x, y, x + self.model.get_c(),
+                                                 y + self.model.get_c(), fill='black')
+                elif self.model.get_dico_etat[x, y] == 2:
+                    if self.model.get_dico_etat[x, y] == 1:
+                        self.view.__can1.create_rectangle(x, y, x + self.model.get_c(),
+                                                     y + self.model.get_c(), fill='black')
+                    else:
+                        self.view.__can1.create_rectangle(x, y, x + self.model.get_c(),
+                                                     y + self.model.get_c(), fill='white')
+                elif self.model.get_dico_etat[x, y] < 2 or self.model.get_dico_etat[x, y] > 3:
+                    self.model.get_dico_etat[x, y] = 0
+                    self.view.__can1.create_rectangle(x, y, x + self.model.get_c(),
+                                                 y + self.model.get_c(), fill='white')
+                u += 1
+            t += 1
