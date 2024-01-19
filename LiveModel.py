@@ -2,7 +2,7 @@ import copy
 
 
 class LiveModel:
-    #__word_original = ["B", "O", "N", "J", "O", "U", "R"]
+    # __word_original = ["B", "O", "N", "J", "O", "U", "R"]
 
     # taille de la grille
     __height = 0
@@ -23,9 +23,8 @@ class LiveModel:
     #
     __flag = 0
 
-
     def __init__(self):
-        #self.__word = copy.copy(self.__word_original)
+        # self.__word = copy.copy(self.__word_original)
         self.__height = 200
         self.__width = 200
         self.__c = 10
@@ -33,9 +32,6 @@ class LiveModel:
         self.__dico_etat = copy.copy(self.__dico_etat)
         self.__flag = copy.copy(self.__flag)
         self.__vitesse = 50
-
-
-
 
     # Getter height
     def get_height(self):
